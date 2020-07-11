@@ -21,3 +21,11 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# 忽略任意路径下/xxx
+**/mvnw
+**/mvnw.cmd
+**/.mvn
+**/test/
+**/target/
+**/HELP.md
