@@ -1,13 +1,25 @@
 package io.xiaowei.member;
 
+import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+@Slf4j
 @SpringBootApplication
+@EnableDiscoveryClient
+@MapperScan("io.xiaowei.member.dao")
 public class MallMemberApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MallMemberApplication.class, args);
+        try {
+            SpringApplication.run(MallMemberApplication.class, args);
+            log.info("会员服务启动成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("会员服务启动失败", e);
+        }
     }
 
 }
