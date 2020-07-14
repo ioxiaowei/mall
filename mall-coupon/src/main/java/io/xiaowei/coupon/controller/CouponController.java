@@ -5,6 +5,8 @@ import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 
 import io.xiaowei.coupon.entity.CouponEntity;
@@ -20,16 +22,18 @@ import io.xiaowei.common.utils.R;
  * @email xiaowei_wang@aliyun.com
  * @date 2020-07-12 15:30:57
  */
+@RefreshScope
 @RestController
 @RequestMapping("coupon/coupon")
 public class CouponController {
+
     @Autowired
     private CouponService couponService;
 
     /**
      * @return io.xiaowei.common.utils.R
      * @Author xiaowei_wang
-     * @Description 测试方法 会员所有优惠券
+     * @Description feign 测试方法 会员所有优惠券
      * @Date 11:53 下午 2020/7/12
      * @Param []
      **/
@@ -39,6 +43,10 @@ public class CouponController {
         couponEntity.setCouponName("满100减200");
         return R.ok().put("coupons", Arrays.asList(couponEntity));
     }
+
+
+    @GetMapping("/")
+
 
     /**
      * 列表
