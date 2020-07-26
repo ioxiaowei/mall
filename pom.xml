@@ -21,6 +21,7 @@
         <module>mall-manager</module>
         <module>mall-generator</module>
         <module>mall-common</module>
+        <module>mall-nacos</module>
     </modules>
 
 </project>

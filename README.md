@@ -26,5 +26,10 @@
 
 `Spring Cloud Alibaba 2.1.0.RELRASE`
 
+## Nacos启动
+`Linux/Unix/Mac`
 
+`启动命令(standalone代表着单机模式运行，非集群模式):`
+
+`sh startup.sh -m standalone`
 
