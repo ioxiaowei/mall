@@ -3,6 +3,7 @@ package io.xiaowei.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.xiaowei.common.utils.PageUtils;
 import io.xiaowei.product.entity.AttrEntity;
+import io.xiaowei.product.vo.AttrVO;
 
 import java.util.Map;
 
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface AttrService extends IService<AttrEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveAttr(AttrVO attr);
 }
 

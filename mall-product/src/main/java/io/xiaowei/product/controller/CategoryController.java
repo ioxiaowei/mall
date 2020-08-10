@@ -44,11 +44,10 @@ public class CategoryController {
      * 信息
      */
     @RequestMapping("/info/{catId}")
-//    @RequiresPermissions("product:category:info")
     public R info(@PathVariable("catId") Long catId) {
         CategoryEntity category = categoryService.getById(catId);
 
-        return R.ok().put("category", category);
+        return R.ok().put("data", category);
     }
 
     /**
@@ -66,12 +65,26 @@ public class CategoryController {
      * 修改
      */
     @RequestMapping("/update")
-//    @RequiresPermissions("product:category:update")
     public R update(@RequestBody CategoryEntity category) {
-        categoryService.updateById(category);
+        categoryService.updateCascade(category);
 
         return R.ok();
     }
+
+
+    /**
+     * @return io.xiaowei.common.utils.R
+     * @Author xiaowei_wang
+     * @Description 批量修改
+     * @Date 11:40 下午 2020/8/3
+     * @Param [category]
+     **/
+    @RequestMapping("/update/sort")
+    public R updateSort(@RequestBody CategoryEntity[] category) {
+        categoryService.updateBatchById(Arrays.asList(category));
+        return R.ok();
+    }
+
 
     /**
      * 删除

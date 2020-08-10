@@ -3,6 +3,7 @@ package io.xiaowei.product.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import io.xiaowei.product.vo.AttrVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,6 @@ import io.xiaowei.product.entity.AttrEntity;
 import io.xiaowei.product.service.AttrService;
 import io.xiaowei.common.utils.PageUtils;
 import io.xiaowei.common.utils.R;
-
 
 
 /**
@@ -35,7 +35,7 @@ public class AttrController {
      */
     @RequestMapping("/list")
 //    @RequiresPermissions("product:attr:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = attrService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -47,8 +47,8 @@ public class AttrController {
      */
     @RequestMapping("/info/{attrId}")
 //    @RequiresPermissions("product:attr:info")
-    public R info(@PathVariable("attrId") Long attrId){
-		AttrEntity attr = attrService.getById(attrId);
+    public R info(@PathVariable("attrId") Long attrId) {
+        AttrEntity attr = attrService.getById(attrId);
 
         return R.ok().put("attr", attr);
     }
@@ -57,9 +57,8 @@ public class AttrController {
      * 保存
      */
     @RequestMapping("/save")
-//    @RequiresPermissions("product:attr:save")
-    public R save(@RequestBody AttrEntity attr){
-		attrService.save(attr);
+    public R save(@RequestBody AttrVO attr) {
+        attrService.saveAttr(attr);
 
         return R.ok();
     }
@@ -69,8 +68,8 @@ public class AttrController {
      */
     @RequestMapping("/update")
 //    @RequiresPermissions("product:attr:update")
-    public R update(@RequestBody AttrEntity attr){
-		attrService.updateById(attr);
+    public R update(@RequestBody AttrEntity attr) {
+        attrService.updateById(attr);
 
         return R.ok();
     }
@@ -80,8 +79,8 @@ public class AttrController {
      */
     @RequestMapping("/delete")
 //    @RequiresPermissions("product:attr:delete")
-    public R delete(@RequestBody Long[] attrIds){
-		attrService.removeByIds(Arrays.asList(attrIds));
+    public R delete(@RequestBody Long[] attrIds) {
+        attrService.removeByIds(Arrays.asList(attrIds));
 
         return R.ok();
     }
