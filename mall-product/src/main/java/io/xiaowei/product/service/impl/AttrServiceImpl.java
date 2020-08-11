@@ -1,12 +1,23 @@
 package io.xiaowei.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.xiaowei.product.dao.AttrAttrgroupRelationDao;
+import io.xiaowei.product.dao.AttrGroupDao;
+import io.xiaowei.product.dao.CategoryDao;
 import io.xiaowei.product.entity.AttrAttrgroupRelationEntity;
+import io.xiaowei.product.entity.AttrGroupEntity;
+import io.xiaowei.product.entity.CategoryEntity;
+import io.xiaowei.product.service.CategoryService;
+import io.xiaowei.product.vo.AttrRespVo;
 import io.xiaowei.product.vo.AttrVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -27,6 +38,14 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     @Resource
     private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
 
+    @Resource
+    private AttrGroupDao attrGroupDao;
+    @Resource
+    private CategoryDao categoryDao;
+
+    @Resource
+    private CategoryService categoryService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrEntity> page = this.page(
@@ -46,6 +65,85 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         attrAttrgroupRelationEntity.setAttrGroupId(attr.getAttrGroupId());
         attrAttrgroupRelationEntity.setAttrId(attrEntity.getAttrId());
         attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
+    }
+
+    @Override
+    public PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId) {
+        QueryWrapper<AttrEntity> queryWrapper = new QueryWrapper<>();
+        if (catelogId != 0) {
+            queryWrapper.eq("catelog_id", catelogId);
+        }
+        String key = (String) params.get("key");
+        if (!StringUtils.isEmpty(key)) {
+            queryWrapper.and((wapper) -> {
+                wapper.eq("attr_id", key).or().like("attr_name", key);
+            });
+        }
+        IPage<AttrEntity> page = this.page(
+                new Query<AttrEntity>().getPage(params), queryWrapper
+        );
+        PageUtils pageUtils = new PageUtils(page);
+        List<AttrEntity> records = page.getRecords();
+        List<AttrRespVo> res = records.stream().map((attrEntity) -> {
+            AttrRespVo respVo = new AttrRespVo();
+            BeanUtils.copyProperties(attrEntity, respVo);
+            //设置分类和分组名字
+            AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = attrAttrgroupRelationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrEntity.getAttrId()));
+            if (attrAttrgroupRelationEntity != null) {
+                AttrGroupEntity groupEntity = attrGroupDao.selectById(attrAttrgroupRelationEntity.getAttrGroupId());
+                respVo.setGroupName(groupEntity.getAttrGroupName());
+            }
+
+            CategoryEntity categoryEntity = categoryDao.selectById(attrEntity.getAttrId());
+            if (categoryEntity != null) {
+                respVo.setCatelogName(categoryEntity.getName());
+            }
+
+            return respVo;
+        }).collect(Collectors.toList());
+        pageUtils.setList(res);
+        return pageUtils;
+    }
+
+    @Override
+    public AttrRespVo getAttrInfo(Long attrId) {
+        AttrRespVo attrRespVo = new AttrRespVo();
+        AttrEntity attrEntity = this.getById(attrId);
+        BeanUtils.copyProperties(attrEntity, attrRespVo);
+
+        AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = attrAttrgroupRelationDao.selectOne(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrEntity.getAttrId()));
+        if (attrAttrgroupRelationEntity != null) {
+            AttrGroupEntity groupEntity = attrGroupDao.selectById(attrAttrgroupRelationEntity.getAttrGroupId());
+            attrRespVo.setGroupName(groupEntity.getAttrGroupName());
+        }
+
+        Long catelogId = attrEntity.getCatelogId();
+        Long[] catelogPath = categoryService.findCatelogPath(catelogId);
+        attrRespVo.setCatelogPath(catelogPath);
+        CategoryEntity categoryEntity = categoryDao.selectById(attrEntity.getAttrId());
+        if (categoryEntity != null) {
+            attrRespVo.setCatelogName(categoryEntity.getName());
+        }
+        return attrRespVo;
+    }
+
+    @Override
+    public void updateAttr(AttrRespVo attrRespVo) {
+        AttrEntity attrEntity = new AttrEntity();
+        BeanUtils.copyProperties(attrRespVo, attrEntity);
+        this.updateById(attrEntity);
+
+
+        AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrAttrgroupRelationEntity();
+        attrAttrgroupRelationEntity.setAttrGroupId(attrRespVo.getAttrGroupId());
+        attrAttrgroupRelationEntity.setAttrId(attrRespVo.getAttrId());
+
+        Integer count = attrAttrgroupRelationDao.selectCount(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrRespVo.getAttrId()));
+        if (count > 0) {
+            attrAttrgroupRelationDao.update(attrAttrgroupRelationEntity, new UpdateWrapper<AttrAttrgroupRelationEntity>().eq("attr_id", attrRespVo.getAttrId()));
+        } else {
+            attrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity);
+        }
     }
 
 }
