@@ -30,9 +30,9 @@ public class AttrController {
     /**
      * 列表
      */
-    @GetMapping("/base/list/{catelogId}")
-    public R baseAttrList(@RequestParam Map<String, Object> params, @PathVariable("catelogId") Long catelogId) {
-        PageUtils page = attrService.queryBaseAttrPage(params, catelogId);
+    @GetMapping("{attrType}/base/list/{catelogId}")
+    public R baseAttrList(@RequestParam Map<String, Object> params, @PathVariable("catelogId") Long catelogId,@PathVariable("attrType") String type) {
+        PageUtils page = attrService.queryBaseAttrPage(params, catelogId,type);
         return R.ok().put("page", page);
     }
 
@@ -41,7 +41,6 @@ public class AttrController {
      * 列表
      */
     @RequestMapping("/list")
-//    @RequiresPermissions("product:attr:list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = attrService.queryPage(params);
 
@@ -53,9 +52,7 @@ public class AttrController {
      * 信息
      */
     @RequestMapping("/info/{attrId}")
-//    @RequiresPermissions("product:attr:info")
     public R info(@PathVariable("attrId") Long attrId) {
-//        AttrEntity attr = attrService.getById(attrId);
         AttrRespVo attrRespVo = attrService.getAttrInfo(attrId);
         return R.ok().put("attr", attrRespVo);
     }
