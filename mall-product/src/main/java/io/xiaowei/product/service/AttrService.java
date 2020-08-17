@@ -3,9 +3,11 @@ package io.xiaowei.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.xiaowei.common.utils.PageUtils;
 import io.xiaowei.product.entity.AttrEntity;
+import io.xiaowei.product.vo.AttrGroupRelationVo;
 import io.xiaowei.product.vo.AttrRespVo;
 import io.xiaowei.product.vo.AttrVO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,5 +28,11 @@ public interface AttrService extends IService<AttrEntity> {
     AttrRespVo getAttrInfo(Long attrId);
 
     void updateAttr(AttrRespVo attr);
+
+    List<AttrEntity> getRelationAttr(Long attrgroupId);
+
+    void deleteRelation(AttrGroupRelationVo[] attrGroupRelationVos);
+
+    PageUtils getNoRelationAttr(Long attrgroupId, Map<String, Object> params);
 }
 

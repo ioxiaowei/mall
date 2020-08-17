@@ -1,8 +1,10 @@
 package io.xiaowei.product.service.impl;
 
+import io.xiaowei.product.entity.AttrEntity;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -41,5 +43,6 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return new PageUtils(page);
         }
     }
+
 
 }

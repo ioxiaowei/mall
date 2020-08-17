@@ -1,15 +1,16 @@
 package io.xiaowei.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import io.xiaowei.product.entity.AttrEntity;
+import io.xiaowei.product.service.AttrAttrgroupRelationService;
+import io.xiaowei.product.service.AttrService;
 import io.xiaowei.product.service.CategoryService;
+import io.xiaowei.product.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.xiaowei.product.entity.AttrGroupEntity;
 import io.xiaowei.product.service.AttrGroupService;
@@ -34,6 +35,46 @@ public class AttrGroupController {
 
     @Resource
     private CategoryService categoryService;
+
+    @Resource
+    private AttrService attrService;
+
+    @Resource
+    private AttrAttrgroupRelationService attrAttrgroupRelationService;
+
+    /**
+     * 关联
+     *
+     * @param attrgroupId
+     * @return
+     */
+    @GetMapping("/{attrgroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId) {
+        List<AttrEntity> list = attrService.getRelationAttr(attrgroupId);
+        return R.ok().put("data", list);
+    }
+
+
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrgroupId") Long attrgroupId, @RequestParam Map<String, Object> params) {
+        PageUtils page = attrService.getNoRelationAttr(attrgroupId, params);
+        return R.ok().put("data", page);
+    }
+
+
+    @PostMapping("attr/relation")
+    public R addRelation(@RequestBody AttrGroupRelationVo[] vos) {
+        attrAttrgroupRelationService.saveBatch(vos);
+        return R.ok();
+    }
+
+
+    @PostMapping("/attr/relation/delete")
+    public R deleteRelation(@RequestBody AttrGroupRelationVo[] attrGroupRelationVos) {
+        attrService.deleteRelation(attrGroupRelationVos);
+        return R.ok();
+    }
+
 
     /**
      * 列表
@@ -60,7 +101,6 @@ public class AttrGroupController {
      * 保存
      */
     @RequestMapping("/save")
-//    @RequiresPermissions("product:attrgroup:save")
     public R save(@RequestBody AttrGroupEntity attrGroup) {
         attrGroupService.save(attrGroup);
 
@@ -71,7 +111,6 @@ public class AttrGroupController {
      * 修改
      */
     @RequestMapping("/update")
-//    @RequiresPermissions("product:attrgroup:update")
     public R update(@RequestBody AttrGroupEntity attrGroup) {
         attrGroupService.updateById(attrGroup);
 
@@ -82,7 +121,6 @@ public class AttrGroupController {
      * 删除
      */
     @RequestMapping("/delete")
-//    @RequiresPermissions("product:attrgroup:delete")
     public R delete(@RequestBody Long[] attrGroupIds) {
         attrGroupService.removeByIds(Arrays.asList(attrGroupIds));
 
